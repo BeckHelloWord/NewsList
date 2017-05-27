@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul li {
+            list-style: none;
+        }
+
+        .news-list {
+            width: 634px;
+            margin: 0 auto;
+        }
+
+        .news-list li {
+            height: 30px;
+            line-height: 30px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .news {
+            color: inherit;
+        }
+
+        .news:hover {
+            color: #666;
+        }
+
+        .news span {
+            display: inline-block;
+            padding: 0 10px;
+            vertical-align: middle;
+        }
+
+        .news .news-logo {
+            min-width: 110px;
+        }
+
+        .news .news-title {
+            width: 350px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="news-list js-newsList">
+
+    </ul>
+
+    <script>
+        //补0操作  
+        function Fillzero(num) {
+            if (parseInt(num) < 10) {
+                num = '0' + num;
+            }
+            return num;
+        }
+
+        //Number自定义方法，毫秒转时间（1970-01-18 15:30:50）
+        if (!('getMyDate' in Number)) {
+            Number.prototype.getMyDate = function () {
+                var reg = /^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])\s+(20|21|22|23|[0-1]\d):[0-5]\d:[0-5]\d$/;
+                if (!reg.test(this)) {
+                    var oDate = new Date(this);
+                    //不能转换为日期对象
+                    if (oDate != 'Invalid Date') {
+                        var oYear = oDate.getFullYear(),
+                            oMonth = oDate.getMonth() + 1,
+                            oDay = oDate.getDate(),
+                            oHour = oDate.getHours(),
+                            oMin = oDate.getMinutes(),
+                            oSen = oDate.getSeconds(),
+                            oTime = oYear + '-' + Fillzero(oMonth) + '-' + Fillzero(oDay) + ' ' + Fillzero(oHour) + ':' + Fillzero(oMin) + ':' + Fillzero(oSen);//最后拼接时间  
+                        return oTime;
+                    } else {
+                        return '';
+                    }
+
+                }
+                return this;
+
+            }
+        }
+
+        //获取数据
+        $.get('http://120.26.112.49:8008/edu/newslist', function (data) {
+            if (data.errno === 0) {
+                //拼接字符串
+                var i = 0, len = data.msg.list.length, html = "";
+                for (; i < len; i++) {
+                    html += "<li><a href='http://www.baidu.com/" + data.msg.list[i].id + "' class='news'><span class='news-logo'>" + data.msg.list[i].from + '</span><span class="news-title">' + data.msg.list[i].title + '</span><span class="news-date">' + data.msg.list[i].create_at.getMyDate() + '</span></a></li>';
+                }
+                //插入
+                $('.js-newsList').append(html);
+            }
+        })
+    </script>
+</body>
+
+</html>
